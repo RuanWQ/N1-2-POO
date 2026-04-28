@@ -1,37 +1,31 @@
 package org.example;
 
 public class Livro {
+    private int id;
     private String titulo;
     private String autor;
     private boolean disponivel;
 
-    public Livro(String titulo, String autor) {
+    public Livro(int id, String titulo, String autor) {
+        this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.disponivel = true;
     }
 
+    public int getId() { return id; }
+    public String getTitulo() { return titulo; }
+    public boolean isDisponivel() { return disponivel; }
+
     public void emprestar() {
-        if (disponivel) {
-            disponivel = false;
-            System.out.println("Livro emprestado :)");
-        } else {
-            System.out.println("Livro já está em uso :(");
-        }
+        this.disponivel = false;
     }
 
     public void devolver() {
-        disponivel = true;
-        System.out.println("Livro devolvido ");
-    }
-
-    public String getTitulo() {
-        return titulo;
+        this.disponivel = true;
     }
 
     public void mostrarInfo() {
-        System.out.println("Titulo: " + titulo);
-        System.out.println("Autor: " + autor);
-        System.out.println("Disponivel: " + (disponivel ? "sim" : "não"));
+        System.out.println("ID: " + id + " | Título: " + titulo + " | Autor: " + autor + " | Status: " + (disponivel ? "Disponível" : "Emprestado"));
     }
 }

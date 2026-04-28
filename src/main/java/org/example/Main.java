@@ -4,81 +4,78 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
         Biblioteca biblioteca = new Biblioteca();
         Scanner sc = new Scanner(System.in);
+        int opcao = -1;
 
-        int opcao;
-        String continuar = "s";
-
-        while (continuar.equalsIgnoreCase("s")) {
-
-            System.out.println("\n=== SISTEMA DE BIBLIOTECA ===");
-            System.out.println("1 - Adicionar Livro");
-            System.out.println("2 - Lista de Livros");
-            System.out.println("3 - Alugar Livro");
-            System.out.println("4 - Devolver Livro");
+        while (opcao != 0) {
+            System.out.println("\n=== BIBLIOTECA DOIS IRMÕES ===");
+            System.out.println("1 - Cadastrar Livro");
+            System.out.println("2 - Listar Livros");
+            System.out.println("3 - Cadastrar Usuário");
+            System.out.println("4 - Listar Usuários");
+            System.out.println("5 - Realizar Empréstimo");
+            System.out.println("6 - Realizar Devolução");
             System.out.println("0 - Sair");
-            System.out.print("Qual a sua escolha: ");
+            System.out.print("Opção: ");
 
             opcao = sc.nextInt();
             sc.nextLine();
 
             switch (opcao) {
-
                 case 1:
-                    System.out.print("Titulo: ");
-                    String titulo = sc.nextLine();
-
+                    System.out.print("Título: ");
+                    String t = sc.nextLine();
                     System.out.print("Autor: ");
-                    String autor = sc.nextLine();
-
-                    biblioteca.adicionarLivro(new Livro(titulo, autor));
+                    String a = sc.nextLine();
+                    biblioteca.adicionarLivro(t, a);
+                    System.out.println("Livro cadastrado!");
                     break;
-
                 case 2:
                     biblioteca.listarLivros();
                     break;
-
                 case 3:
-                    System.out.print("Digite o titulo: ");
-                    Livro livroEmp = biblioteca.buscarLivro(sc.nextLine());
-
-                    if (livroEmp != null) {
-                        livroEmp.emprestar();
-                    } else {
-                        System.out.println("Livro indisponivel but");
-                    }
+                    System.out.print("Nome do Usuário: ");
+                    String nomeU = sc.nextLine();
+                    biblioteca.adicionarUsuario(nomeU);
+                    System.out.println("Usuário cadastrado!");
                     break;
-
                 case 4:
-                    System.out.print("Digite o titulo: ");
-                    Livro livroDev = biblioteca.buscarLivro(sc.nextLine());
+                    biblioteca.listarUsuarios();
+                    break;
+                case 5:
+                    System.out.print("ID do Livro: ");
+                    int idL = sc.nextInt();
+                    System.out.print("ID do Usuário: ");
+                    int idU = sc.nextInt();
+                    Livro lEmp = biblioteca.buscarLivroPorId(idL);
+                    Usuario uEmp = biblioteca.buscarUsuarioPorId(idU);
 
-                    if (livroDev != null) {
-                        livroDev.devolver();
+                    if (lEmp != null && uEmp != null && lEmp.isDisponivel()) {
+                        lEmp.emprestar();
+                        System.out.println("Empréstimo de '" + lEmp.getTitulo() + "' para " + uEmp.getNome() + " realizado!");
                     } else {
-                        System.out.println("Esse livro não exista LOL :(");
+                        System.out.println("Falha: Livro indisponível ou IDs incorretos.");
                     }
                     break;
-
+                case 6:
+                    System.out.print("ID do Livro para devolução: ");
+                    int idDev = sc.nextInt();
+                    Livro lDev = biblioteca.buscarLivroPorId(idDev);
+                    if (lDev != null) {
+                        lDev.devolver();
+                        System.out.println("Devolução concluída!");
+                    } else {
+                        System.out.println("Livro não encontrado.");
+                    }
+                    break;
                 case 0:
-                    System.out.println("Saindo da Biblioteca Dois-Irmoes");
-                    sc.close();
-                    return;
-
+                    System.out.println("Sistema encerrado.");
+                    break;
                 default:
-                    System.out.println("Opção não criada");
-            }
-
-            System.out.print("\nDeseja continuar ou quer sair s ou n: ");
-            continuar = sc.nextLine();
-
-            if (continuar.equalsIgnoreCase("n")) {
-                System.out.println("Saindo do sistema...!");
+                    System.out.println("Opção inválida.");
             }
         }
-
         sc.close();
     }
 }
