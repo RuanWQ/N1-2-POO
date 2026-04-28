@@ -7,13 +7,13 @@ public class Biblioteca {
 
     public void adicionarLivro(Livro livro) {
         livros.add(livro);
-        System.out.println("Livro adicionado!");
+        System.out.println("Livro incluido na biblioteca Dois-irmoes");
     }
 
     public void listarLivros() {
         for (Livro l : livros) {
             l.mostrarInfo();
-            System.out.println("-------------------");
+            System.out.println("==============================");
         }
     }
 

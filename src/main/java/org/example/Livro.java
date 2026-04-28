@@ -14,15 +14,15 @@ public class Livro {
     public void emprestar() {
         if (disponivel) {
             disponivel = false;
-            System.out.println("Livro emprestado com sucesso!");
+            System.out.println("Livro emprestado :)");
         } else {
-            System.out.println("Livro já está emprestado.");
+            System.out.println("Livro já está em uso :(");
         }
     }
 
     public void devolver() {
         disponivel = true;
-        System.out.println("Livro devolvido!");
+        System.out.println("Livro devolvido ");
     }
 
     public String getTitulo() {
@@ -30,8 +30,8 @@ public class Livro {
     }
 
     public void mostrarInfo() {
-        System.out.println("Título: " + titulo);
+        System.out.println("Titulo: " + titulo);
         System.out.println("Autor: " + autor);
-        System.out.println("Disponível: " + (disponivel ? "Sim" : "Não"));
+        System.out.println("Disponivel: " + (disponivel ? "sim" : "não"));
     }
 }
