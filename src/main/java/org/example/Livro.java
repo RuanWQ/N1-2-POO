@@ -26,6 +26,6 @@ public class Livro {
     }
 
     public void mostrarInfo() {
-        System.out.println("ID: " + id + " | Título: " + titulo + " | Autor: " + autor + " | Status: " + (disponivel ? "Disponível" : "Emprestado"));
+        System.out.println("ID: " + id + " | Titulo: " + titulo + " | Autor: " + autor + " | Status: " + (disponivel ? "Disponivel" : "Emprestado"));
     }
 }

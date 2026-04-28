@@ -1,60 +1,115 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 
 public class Biblioteca {
-    private List<Livro> livros = new ArrayList<>();
-    private List<Usuario> usuarios = new ArrayList<>();
-    private int proximoLivroId = 1;
-    private int proximoUsuarioId = 1;
-
-    public Biblioteca() {
-        popularDadosIniciais();
-    }
-
-    private void popularDadosIniciais() {
-        adicionarLivro("Dom Casmurro", "Machado de Assis");
-        adicionarLivro("1984", "George Orwell");
-        adicionarLivro("O Pequeno Príncipe", "Antoine de Saint-Exupéry");
-        adicionarLivro("O Hobbit", "J.R.R. Tolkien");
-    }
 
     public void adicionarLivro(String titulo, String autor) {
-        livros.add(new Livro(proximoLivroId++, titulo, autor));
+        String sql = "INSERT INTO livros (titulo, autor, disponivel) VALUES (?, ?, 1)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, titulo);
+            pstmt.setString(2, autor);
+            pstmt.executeUpdate();
+            System.out.println("Livro incluído com sucesso :)");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void adicionarUsuario(String nome) {
-        usuarios.add(new Usuario(proximoUsuarioId++, nome));
+        String sql = "INSERT INTO usuarios (nome) VALUES (?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nome);
+            pstmt.executeUpdate();
+            System.out.println("Usuário cadastrado com sucesso :)");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void listarLivros() {
-        if (livros.isEmpty()) {
-            System.out.println("Acervo vazio.");
-            return;
+        String sql = "SELECT * FROM livros";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            System.out.println("\n<> <> <> <> ACERVO DA BIBLIOTECA <> <> <> <>");
+            while (rs.next()) {
+                String status = (rs.getInt("disponivel") == 1) ? "Disponivel" : "Emprestado";
+                System.out.println("ID: " + rs.getInt("id") +
+                        " | Título: " + rs.getString("titulo") +
+                        " | Autor: " + rs.getString("autor") +
+                        " | Status: " + status);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        for (Livro l : livros) l.mostrarInfo();
     }
 
     public void listarUsuarios() {
-        if (usuarios.isEmpty()) {
-            System.out.println("Nenhum usuário cadastrado.");
-            return;
+        String sql = "SELECT * FROM usuarios";
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            System.out.println("\n<> <> <> <> USUARIOS CADASTRADOS <> <> <> <>");
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("id") + " | Nome: " + rs.getString("nome"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        for (Usuario u : usuarios) u.mostrarInfo();
     }
 
     public Livro buscarLivroPorId(int id) {
-        for (Livro l : livros) {
-            if (l.getId() == id) return l;
+        String sql = "SELECT * FROM livros WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Livro l = new Livro(rs.getInt("id"), rs.getString("titulo"), rs.getString("autor"));
+                if (rs.getInt("disponivel") == 0) {
+                    l.emprestar();
+                }
+                return l;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     public Usuario buscarUsuarioPorId(int id) {
-        for (Usuario u : usuarios) {
-            if (u.getId() == id) return u;
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Usuario(rs.getInt("id"), rs.getString("nome"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
+    }
+
+    public void atualizarStatusBD(int idLivro, int status) {
+        String sql = "UPDATE livros SET disponivel = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, status);
+            pstmt.setInt(2, idLivro);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar status no banco: " + e.getMessage());
+        }
     }
 }
